@@ -1,12 +1,26 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue"
 
-const texte = ref("vinicius la merde");
-const postlist = ref([]);
-function addPost(){
-  postlist.value.push(texte.value);
-  texte.value = "";
-  console.log(postlist);
+const texte = ref(" ")
+const trimedText = computed(() => texte.value.trim())
+const postlist = ref([])
+function addPost() {
+  const newPost = {
+    id: Math.random.toString(36).substring(2),
+    content: texte.value.trim(),
+    createdAt: new Date(),
+    author: {
+      username: "no",
+      avatar:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmT7PcffnQYc1ulaxJKGBQvfV2Uq7mXwqcRw&s",
+    },
+  }
+  postlist.value.push(newPost)
+  postlist.value.sort(function (a, b) {
+    return a.createdAt < b.createdAt
+  })
+  texte.value = ""
+  //console.log(postlist)
 }
 //let texte ="vinicius la merde";
 /*function updateText(event){
@@ -18,16 +32,24 @@ function addPost(){
   <main>
     <div class="container">
       <form class="card" @submit.prevent="addPost">
-        <textarea name="post" id="post" placeholder="Ecrit fdp" v-model="texte" ></textarea>
-        <button type="submit">Publier</button>
+        <textarea name="post" id="post" placeholder="Ecrit gitan" v-model="texte"></textarea>
+        <button type="submit" :disabled="!trimedText">Publier</button>
       </form>
 
-      <p v-for="(postlists, index) in postlist" :key="index">{{ postlists }}</p>
+      <h2 v-show="postlist.length == 0">Aucun posts pour le moment</h2>
+
+      <article v-for="(postlists, index) in postlist" :key="index" class="card">
+        <header>
+          <img :src="postlists.author.avatar" alt="avatar" width="166" height="166" />
+          <a> {{ postlists.author.username }}</a>
+        </header>
+        <p>{{ postlists.content }}</p>
+      </article>
     </div>
   </main>
 </template>
 <style scoped>
-  .container {
+.container {
   height: 100vh;
   margin: 0 auto;
   max-width: 640px;
@@ -67,5 +89,25 @@ button {
   font-size: 1rem;
   height: 40px;
   padding: 0 1rem;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+article {
+  padding: 1rem;
+  overflow: hidden;
+}
+
+article p {
+  white-space: pre-wrap;
+}
+
+article header {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
 }
 </style>
