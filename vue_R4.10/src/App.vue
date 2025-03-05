@@ -4,6 +4,8 @@ import { ref, computed } from "vue"
 const texte = ref(" ")
 const trimedText = computed(() => texte.value.trim())
 const postlist = ref([])
+const sortedPosts = computed(() => [...postlist.value].sort( (a, b) => b.createdAt - a.createdAt));
+
 function addPost() {
   const newPost = {
     id: Math.random.toString(36).substring(2),
@@ -16,9 +18,9 @@ function addPost() {
     },
   }
   postlist.value.push(newPost)
-  postlist.value.sort(function (a, b) {
+  /*postlist.value.sort(function (a, b) {
     return a.createdAt < b.createdAt
-  })
+  })*/
   texte.value = ""
   //console.log(postlist)
 }
@@ -38,7 +40,7 @@ function addPost() {
 
       <h2 v-show="postlist.length == 0">Aucun posts pour le moment</h2>
 
-      <article v-for="(postlists, index) in postlist" :key="index" class="card">
+      <article v-for="(postlists, index) in sortedPosts" :key="index" class="card">
         <header>
           <img :src="postlists.author.avatar" alt="avatar" width="166" height="166" />
           <a> {{ postlists.author.username }}</a>
